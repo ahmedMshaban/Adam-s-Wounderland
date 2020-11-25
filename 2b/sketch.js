@@ -303,9 +303,7 @@ function draw() {
   //right hand
   fill(209, 169, 130);
   ellipse(gameChar.pos_x - 7, gameChar.pos_y - 22.5, 5, 5);
+
 }
 
-function mousePressed() {
-  gameChar.pos_x = mouseX;
-  gameChar.pos_y = mouseY;
-}
+
