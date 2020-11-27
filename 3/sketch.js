@@ -30,14 +30,6 @@ let mountain;
 
 let cloud;
 
-let isLeft;
-
-let isRight;
-
-let isFalling;
-
-let isPlummeting;
-
 function setup() {
   createCanvas(1024, 576);
 
@@ -46,6 +38,10 @@ function setup() {
   gameChar = {
     pos_x: width / 2,
     pos_y: floorPos_y,
+    isLeft: false,
+    isRight: false,
+    isFalling: false,
+    isPlummeting: false,
   };
 
   tree = {
@@ -65,6 +61,7 @@ function setup() {
     pos_x: 400,
     pos_y: 405,
     size: 10,
+    isFound: false,
   };
 
   cloud = {
@@ -78,18 +75,9 @@ function setup() {
     pos_y: 200,
     wide: 150,
   };
-
-  isLeft = false;
-
-  isRight = false;
-
-  isFalling = false;
-
-  isPlummeting = false;
 }
 
 function draw() {
-  console.log(height / 2);
   //fill the sky
   background(201, 229, 211);
 
@@ -236,37 +224,63 @@ function draw() {
   rect(canyon.pos_x, floorPos_y, canyon.width, height - floorPos_y);
 
   //A collectable token
-  fill(205, 175, 158);
-  ellipse(
-    collectableItem.pos_x,
-    collectableItem.pos_y,
-    collectableItem.size * 3,
-    collectableItem.size * 3
-  );
-  fill(240, 158, 179);
-  ellipse(
-    collectableItem.pos_x,
-    collectableItem.pos_y,
-    collectableItem.size * 1.75,
-    collectableItem.size * 1.75
-  );
-  fill(201, 229, 211);
-  ellipse(
-    collectableItem.pos_x,
-    collectableItem.pos_y,
-    collectableItem.size,
-    collectableItem.size
-  );
-  fill(255);
-  ellipse(collectableItem.pos_x + 9, collectableItem.pos_y + 4, 3, 3);
-  ellipse(collectableItem.pos_x - 9, collectableItem.pos_y + 4, 3, 3);
-  ellipse(collectableItem.pos_x + 9, collectableItem.pos_y - 5, 3, 3);
-  ellipse(collectableItem.pos_x - 7, collectableItem.pos_y - 5, 3, 3);
-  ellipse(collectableItem.pos_x, collectableItem.pos_y - 10, 3, 3);
-  ellipse(collectableItem.pos_x, collectableItem.pos_y + 10, 3, 3);
+  if (collectableItem.isFound == false) {
+    fill(205, 175, 158);
+    ellipse(
+      collectableItem.pos_x,
+      collectableItem.pos_y,
+      collectableItem.size * 3,
+      collectableItem.size * 3
+    );
+    fill(240, 158, 179);
+    ellipse(
+      collectableItem.pos_x,
+      collectableItem.pos_y,
+      collectableItem.size * 1.75,
+      collectableItem.size * 1.75
+    );
+    fill(201, 229, 211);
+    ellipse(
+      collectableItem.pos_x,
+      collectableItem.pos_y,
+      collectableItem.size,
+      collectableItem.size
+    );
+    fill(255);
+    ellipse(collectableItem.pos_x + 9, collectableItem.pos_y + 4, 3, 3);
+    ellipse(collectableItem.pos_x - 9, collectableItem.pos_y + 4, 3, 3);
+    ellipse(collectableItem.pos_x + 9, collectableItem.pos_y - 5, 3, 3);
+    ellipse(collectableItem.pos_x - 7, collectableItem.pos_y - 5, 3, 3);
+    ellipse(collectableItem.pos_x, collectableItem.pos_y - 10, 3, 3);
+    ellipse(collectableItem.pos_x, collectableItem.pos_y + 10, 3, 3);
+  }
+
+  //Collectable item interaction
+  // 34 is gameChar body width + collectableItem size
+  if (
+    dist(
+      collectableItem.pos_x,
+      collectableItem.pos_y,
+      gameChar.pos_x,
+      gameChar.pos_y
+    ) < 34
+  ) {
+    collectableItem.isFound = true;
+  }
+
+  //Falling down the canyon
+  //Check if gameChar pos_x is within the range of the canyon
+  if (
+    gameChar.pos_x - 5 > canyon.pos_x &&
+    gameChar.pos_x + 5 < canyon.pos_x + canyon.width &&
+    gameChar.pos_y >= floorPos_y
+  ) {
+    gameChar.isPlummeting = true;
+    gameChar.pos_y += 5;
+  }
 
   //the game character
-  if (isLeft && isFalling) {
+  if (gameChar.isLeft && gameChar.isFalling) {
     // add your jumping-left code
     //hair
     fill(0);
@@ -316,7 +330,7 @@ function draw() {
     //left hand
     fill(209, 169, 130);
     ellipse(gameChar.pos_x, gameChar.pos_y - 50.5, 5, 5);
-  } else if (isRight && isFalling) {
+  } else if (gameChar.isRight && gameChar.isFalling) {
     //hair
     fill(0);
     ellipse(gameChar.pos_x, gameChar.pos_y - 63.5, 5, 5);
@@ -365,7 +379,7 @@ function draw() {
     //left hand
     fill(209, 169, 130);
     ellipse(gameChar.pos_x, gameChar.pos_y - 50.5, 5, 5);
-  } else if (isLeft) {
+  } else if (gameChar.isLeft) {
     //hair
     fill(0);
     ellipse(gameChar.pos_x, gameChar.pos_y - 63.5, 5, 5);
@@ -418,7 +432,7 @@ function draw() {
     //left hand
     fill(209, 169, 130);
     ellipse(gameChar.pos_x, gameChar.pos_y - 22.5, 5, 5);
-  } else if (isRight) {
+  } else if (gameChar.isRight) {
     //hair
     fill(0);
     ellipse(gameChar.pos_x, gameChar.pos_y - 63.5, 5, 5);
@@ -471,7 +485,7 @@ function draw() {
     //left hand
     fill(209, 169, 130);
     ellipse(gameChar.pos_x, gameChar.pos_y - 22.5, 5, 5);
-  } else if (isFalling || isPlummeting) {
+  } else if (gameChar.isFalling || gameChar.isPlummeting) {
     //hair
     fill(0);
     ellipse(gameChar.pos_x, gameChar.pos_y - 63.5, 5, 5);
@@ -604,39 +618,45 @@ function draw() {
 
   ///////////INTERACTION CODE//////////
   //(Put conditional statements to move the game character below here
-  if (isRight === true) {
+  if (gameChar.isRight === true) {
     gameChar.pos_x += 2;
     //Fall down while going right
     if (gameChar.pos_y < floorPos_y) {
       gameChar.pos_y++;
-      isFalling = true;
-    } else if (isPlummeting === true && gameChar.pos_y === floorPos_y) {
+      gameChar.isFalling = true;
+    } else if (
+      gameChar.isPlummeting === true &&
+      gameChar.pos_y === floorPos_y
+    ) {
       //jump while walking right
       gameChar.pos_y -= 100;
     } else if (gameChar.pos_y === floorPos_y) {
       //change face when touch ground
-      isFalling = false;
+      gameChar.isFalling = false;
     }
-  } else if (isLeft === true) {
+  } else if (gameChar.isLeft === true) {
     gameChar.pos_x -= 2;
     //Fall down while going left
     if (gameChar.pos_y < floorPos_y) {
       gameChar.pos_y++;
-      isFalling = true;
-    } else if (isPlummeting === true && gameChar.pos_y === floorPos_y) {
+      gameChar.isFalling = true;
+    } else if (
+      gameChar.isPlummeting === true &&
+      gameChar.pos_y === floorPos_y
+    ) {
       //jump while walking left
       gameChar.pos_y -= 100;
     } else if (gameChar.pos_y === floorPos_y) {
       //change face when touch ground
-      isFalling = false;
+      gameChar.isFalling = false;
     }
-  } else if (isPlummeting === true && gameChar.pos_y === floorPos_y) {
+  } else if (gameChar.isPlummeting === true && gameChar.pos_y === floorPos_y) {
     gameChar.pos_y -= 100;
   } else if (gameChar.pos_y < floorPos_y) {
     gameChar.pos_y++;
-    isFalling = true;
+    gameChar.isFalling = true;
   } else {
-    isFalling = false;
+    gameChar.isFalling = false;
   }
 }
 
@@ -644,16 +664,12 @@ function keyPressed() {
   // if statements to control the animation of the character when
   // keys are pressed.
 
-  //open up the console to see how these work
-  console.log("keyPressed: " + key);
-  console.log("keyPressed: " + keyCode);
-
   if (keyCode === 39) {
-    isRight = true;
+    gameChar.isRight = true;
   } else if (keyCode === 37) {
-    isLeft = true;
+    gameChar.isLeft = true;
   } else if (keyCode === 32 || keyCode === 38) {
-    isPlummeting = true;
+    gameChar.isPlummeting = true;
   }
 }
 
@@ -661,13 +677,11 @@ function keyReleased() {
   // if statements to control the animation of the character when
   // keys are released.
 
-  console.log("keyReleased: " + key);
-  console.log("keyReleased: " + keyCode);
   if (keyCode === 39) {
-    isRight = false;
+    gameChar.isRight = false;
   } else if (keyCode === 37) {
-    isLeft = false;
+    gameChar.isLeft = false;
   } else if (keyCode === 32 || keyCode === 38) {
-    isPlummeting = false;
+    gameChar.isPlummeting = false;
   }
 }
