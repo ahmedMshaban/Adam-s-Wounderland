@@ -188,19 +188,13 @@ function draw() {
   translate(scrollPos, 0);
 
   // Draw clouds.
-  for (let i = 0; i < clouds.length; i++) {
-    drawClouds(clouds[i]);
-  }
+  drawClouds();
 
   // Draw mountains.
-  for (let i = 0; i < mountains.length; i++) {
-    drawMountains(mountains[i]);
-  }
+  drawMountains();
 
   // Draw trees.
-  for (let i = 0; i < trees.length; i++) {
-    drawTrees(trees[i]);
-  }
+  drawTrees();
 
   // Draw canyons.
   for (let i = 0; i < canyons.length; i++) {
@@ -252,8 +246,6 @@ function draw() {
     gameChar.isFalling = false;
   }
 
- 
-
   // Update real position of gameChar for collision detection.
   gameChar.world_x = gameChar.pos_x - scrollPos;
 }
@@ -297,7 +289,6 @@ function keyReleased() {
 // ------------------------------
 
 // Function to draw the game character.
-
 function drawGameChar() {
   //the game character
   if (gameChar.isLeft && gameChar.isFalling) {
@@ -646,209 +637,220 @@ function drawGameChar() {
 // ---------------------------
 
 // Function to draw cloud objects.
-function drawClouds(t_cloud) {
-  strokeWeight(1);
-  fill(252, 251, 231);
-  ellipse(t_cloud.pos_x, t_cloud.pos_y, 24 * t_cloud.scale, 24 * t_cloud.scale);
-  ellipse(
-    t_cloud.pos_x + 10,
-    t_cloud.pos_y + 10,
-    24 * t_cloud.scale,
-    24 * t_cloud.scale
-  );
-  ellipse(
-    t_cloud.pos_x + 30,
-    t_cloud.pos_y + 10,
-    24 * t_cloud.scale,
-    24 * t_cloud.scale
-  );
-  ellipse(
-    t_cloud.pos_x + 30,
-    t_cloud.pos_y - 10,
-    24 * t_cloud.scale,
-    24 * t_cloud.scale
-  );
-  ellipse(
-    t_cloud.pos_x + 20,
-    t_cloud.pos_y - 10,
-    24 * t_cloud.scale,
-    24 * t_cloud.scale
-  );
-  ellipse(
-    t_cloud.pos_x + 40,
-    t_cloud.pos_y,
-    24 * t_cloud.scale,
-    24 * t_cloud.scale
-  );
-  //Right Eye
-  stroke(51);
-  beginShape();
-  curveVertex(t_cloud.pos_x + 32, t_cloud.pos_y - 15);
-  curveVertex(t_cloud.pos_x + 32, t_cloud.pos_y - 15);
-  curveVertex(t_cloud.pos_x + 35, t_cloud.pos_y - 9);
-  curveVertex(t_cloud.pos_x + 39, t_cloud.pos_y - 9);
-  curveVertex(t_cloud.pos_x + 40, t_cloud.pos_y - 15);
-  curveVertex(t_cloud.pos_x + 40, t_cloud.pos_y - 15);
-  endShape();
-  //Left Eye
-  beginShape();
-  curveVertex(t_cloud.pos_x, t_cloud.pos_y - 15);
-  curveVertex(t_cloud.pos_x, t_cloud.pos_y - 15);
-  curveVertex(t_cloud.pos_x + 4, t_cloud.pos_y - 9);
-  curveVertex(t_cloud.pos_x + 8, t_cloud.pos_y - 9);
-  curveVertex(t_cloud.pos_x + 8, t_cloud.pos_y - 15);
-  curveVertex(t_cloud.pos_x + 8, t_cloud.pos_y - 15);
-  endShape();
-  fill(250, 165, 180);
-  noStroke();
-  //left cheek
-  ellipse(t_cloud.pos_x + 3, t_cloud.pos_y, 10, 5);
-  // right cheek
-  ellipse(t_cloud.pos_x + 40, t_cloud.pos_y, 10, 5);
-  //Mouth
-  stroke(51);
-  beginShape();
-  fill(252, 251, 231);
-  curveVertex(t_cloud.pos_x + 20, t_cloud.pos_y + 12);
-  curveVertex(t_cloud.pos_x + 20, t_cloud.pos_y + 12);
-  curveVertex(t_cloud.pos_x + 24, t_cloud.pos_y + 13);
-  curveVertex(t_cloud.pos_x + 26, t_cloud.pos_y + 13);
-  curveVertex(t_cloud.pos_x + 28, t_cloud.pos_y + 12);
-  curveVertex(t_cloud.pos_x + 28, t_cloud.pos_y + 12);
-  endShape();
-  noStroke();
+function drawClouds() {
+  for (let i = 0; i < clouds.length; i++) {
+    strokeWeight(1);
+    fill(252, 251, 231);
+    ellipse(
+      clouds[i].pos_x,
+      clouds[i].pos_y,
+      24 * clouds[i].scale,
+      24 * clouds[i].scale
+    );
+    ellipse(
+      clouds[i].pos_x + 10,
+      clouds[i].pos_y + 10,
+      24 * clouds[i].scale,
+      24 * clouds[i].scale
+    );
+    ellipse(
+      clouds[i].pos_x + 30,
+      clouds[i].pos_y + 10,
+      24 * clouds[i].scale,
+      24 * clouds[i].scale
+    );
+    ellipse(
+      clouds[i].pos_x + 30,
+      clouds[i].pos_y - 10,
+      24 * clouds[i].scale,
+      24 * clouds[i].scale
+    );
+    ellipse(
+      clouds[i].pos_x + 20,
+      clouds[i].pos_y - 10,
+      24 * clouds[i].scale,
+      24 * clouds[i].scale
+    );
+    ellipse(
+      clouds[i].pos_x + 40,
+      clouds[i].pos_y,
+      24 * clouds[i].scale,
+      24 * clouds[i].scale
+    );
+    //Right Eye
+    stroke(51);
+    beginShape();
+    curveVertex(clouds[i].pos_x + 32, clouds[i].pos_y - 15);
+    curveVertex(clouds[i].pos_x + 32, clouds[i].pos_y - 15);
+    curveVertex(clouds[i].pos_x + 35, clouds[i].pos_y - 9);
+    curveVertex(clouds[i].pos_x + 39, clouds[i].pos_y - 9);
+    curveVertex(clouds[i].pos_x + 40, clouds[i].pos_y - 15);
+    curveVertex(clouds[i].pos_x + 40, clouds[i].pos_y - 15);
+    endShape();
+    //Left Eye
+    beginShape();
+    curveVertex(clouds[i].pos_x, clouds[i].pos_y - 15);
+    curveVertex(clouds[i].pos_x, clouds[i].pos_y - 15);
+    curveVertex(clouds[i].pos_x + 4, clouds[i].pos_y - 9);
+    curveVertex(clouds[i].pos_x + 8, clouds[i].pos_y - 9);
+    curveVertex(clouds[i].pos_x + 8, clouds[i].pos_y - 15);
+    curveVertex(clouds[i].pos_x + 8, clouds[i].pos_y - 15);
+    endShape();
+    fill(250, 165, 180);
+    noStroke();
+    //left cheek
+    ellipse(clouds[i].pos_x + 3, clouds[i].pos_y, 10, 5);
+    // right cheek
+    ellipse(clouds[i].pos_x + 40, clouds[i].pos_y, 10, 5);
+    //Mouth
+    stroke(51);
+    beginShape();
+    fill(252, 251, 231);
+    curveVertex(clouds[i].pos_x + 20, clouds[i].pos_y + 12);
+    curveVertex(clouds[i].pos_x + 20, clouds[i].pos_y + 12);
+    curveVertex(clouds[i].pos_x + 24, clouds[i].pos_y + 13);
+    curveVertex(clouds[i].pos_x + 26, clouds[i].pos_y + 13);
+    curveVertex(clouds[i].pos_x + 28, clouds[i].pos_y + 12);
+    curveVertex(clouds[i].pos_x + 28, clouds[i].pos_y + 12);
+    endShape();
+    noStroke();
+  }
 }
 // Function to draw mountains objects.
-function drawMountains(t_mountain) {
-  noStroke();
-  fill(252, 251, 231);
-  //mountains
-  triangle(
-    t_mountain.pos_x - t_mountain.wide,
-    432,
-    t_mountain.pos_x + t_mountain.wide,
-    432,
-    t_mountain.pos_x,
-    t_mountain.pos_y
-  );
-  //mountain Crown
-  fill(229, 126, 104);
-  triangle(
-    t_mountain.pos_x - 20,
-    t_mountain.pos_y + 30,
-    t_mountain.pos_x + 20,
-    t_mountain.pos_y + 30,
-    t_mountain.pos_x,
-    t_mountain.pos_y
-  );
-  triangle(
-    t_mountain.pos_x - 20,
-    t_mountain.pos_y + 30,
-    t_mountain.pos_x + 7,
-    t_mountain.pos_y + 30,
-    t_mountain.pos_x - 9,
-    t_mountain.pos_y + 50
-  );
-  triangle(
-    t_mountain.pos_x - 0,
-    t_mountain.pos_y + 30,
-    t_mountain.pos_x + 20,
-    t_mountain.pos_y + 30,
-    t_mountain.pos_x + 12,
-    t_mountain.pos_y + 40
-  );
+function drawMountains() {
+  for (let i = 0; i < mountains.length; i++) {
+    noStroke();
+    fill(252, 251, 231);
+    //mountains
+    triangle(
+      mountains[i].pos_x - mountains[i].wide,
+      432,
+      mountains[i].pos_x + mountains[i].wide,
+      432,
+      mountains[i].pos_x,
+      mountains[i].pos_y
+    );
+    //mountain Crown
+    fill(229, 126, 104);
+    triangle(
+      mountains[i].pos_x - 20,
+      mountains[i].pos_y + 30,
+      mountains[i].pos_x + 20,
+      mountains[i].pos_y + 30,
+      mountains[i].pos_x,
+      mountains[i].pos_y
+    );
+    triangle(
+      mountains[i].pos_x - 20,
+      mountains[i].pos_y + 30,
+      mountains[i].pos_x + 7,
+      mountains[i].pos_y + 30,
+      mountains[i].pos_x - 9,
+      mountains[i].pos_y + 50
+    );
+    triangle(
+      mountains[i].pos_x - 0,
+      mountains[i].pos_y + 30,
+      mountains[i].pos_x + 20,
+      mountains[i].pos_y + 30,
+      mountains[i].pos_x + 12,
+      mountains[i].pos_y + 40
+    );
+  }
 }
 // Function to draw trees objects.
-function drawTrees(t_tree) {
-  noStroke();
-  fill(204, 145, 115);
-  rect(t_tree.pos_x - 2, t_tree.pos_y, 10, 120);
-  fill(203, 174, 214);
-  ellipse(
-    t_tree.shadow_x,
-    t_tree.shadow_y - 100,
-    40 * t_tree.scale,
-    20 * t_tree.scale
-  );
-  ellipse(
-    t_tree.shadow_x,
-    t_tree.shadow_y - 90,
-    50 * t_tree.scale,
-    25 * t_tree.scale
-  );
-  ellipse(
-    t_tree.shadow_x,
-    t_tree.shadow_y - 80,
-    60 * t_tree.scale,
-    30 * t_tree.scale
-  );
-  ellipse(
-    t_tree.shadow_x,
-    t_tree.shadow_y - 70,
-    70 * t_tree.scale,
-    35 * t_tree.scale
-  );
-  ellipse(
-    t_tree.shadow_x,
-    t_tree.shadow_y - 55,
-    80 * t_tree.scale,
-    40 * t_tree.scale
-  );
-  ellipse(
-    t_tree.shadow_x,
-    t_tree.shadow_y - 40,
-    90 * t_tree.scale,
-    45 * t_tree.scale
-  );
-  ellipse(
-    t_tree.shadow_x,
-    t_tree.shadow_y - 20,
-    100 * t_tree.scale,
-    50 * t_tree.scale
-  );
-  fill(218, 194, 225);
-  ellipse(
-    t_tree.pos_x,
-    t_tree.pos_y - 100,
-    40 * t_tree.scale,
-    20 * t_tree.scale
-  );
-  ellipse(
-    t_tree.pos_x,
-    t_tree.pos_y - 90,
-    50 * t_tree.scale,
-    25 * t_tree.scale
-  );
-  ellipse(
-    t_tree.pos_x,
-    t_tree.pos_y - 80,
-    60 * t_tree.scale,
-    30 * t_tree.scale
-  );
-  ellipse(
-    t_tree.pos_x,
-    t_tree.pos_y - 70,
-    70 * t_tree.scale,
-    35 * t_tree.scale
-  );
-  ellipse(
-    t_tree.pos_x,
-    t_tree.pos_y - 55,
-    80 * t_tree.scale,
-    40 * t_tree.scale
-  );
-  ellipse(
-    t_tree.pos_x,
-    t_tree.pos_y - 40,
-    90 * t_tree.scale,
-    45 * t_tree.scale
-  );
-  ellipse(
-    t_tree.pos_x,
-    t_tree.pos_y - 20,
-    100 * t_tree.scale,
-    50 * t_tree.scale
-  );
+function drawTrees() {
+  for (let i = 0; i < trees.length; i++) {
+    noStroke();
+    fill(204, 145, 115);
+    rect(trees[i].pos_x - 2, trees[i].pos_y, 10, 120);
+    fill(203, 174, 214);
+    ellipse(
+      trees[i].shadow_x,
+      trees[i].shadow_y - 100,
+      40 * trees[i].scale,
+      20 * trees[i].scale
+    );
+    ellipse(
+      trees[i].shadow_x,
+      trees[i].shadow_y - 90,
+      50 * trees[i].scale,
+      25 * trees[i].scale
+    );
+    ellipse(
+      trees[i].shadow_x,
+      trees[i].shadow_y - 80,
+      60 * trees[i].scale,
+      30 * trees[i].scale
+    );
+    ellipse(
+      trees[i].shadow_x,
+      trees[i].shadow_y - 70,
+      70 * trees[i].scale,
+      35 * trees[i].scale
+    );
+    ellipse(
+      trees[i].shadow_x,
+      trees[i].shadow_y - 55,
+      80 * trees[i].scale,
+      40 * trees[i].scale
+    );
+    ellipse(
+      trees[i].shadow_x,
+      trees[i].shadow_y - 40,
+      90 * trees[i].scale,
+      45 * trees[i].scale
+    );
+    ellipse(
+      trees[i].shadow_x,
+      trees[i].shadow_y - 20,
+      100 * trees[i].scale,
+      50 * trees[i].scale
+    );
+    fill(218, 194, 225);
+    ellipse(
+      trees[i].pos_x,
+      trees[i].pos_y - 100,
+      40 * trees[i].scale,
+      20 * trees[i].scale
+    );
+    ellipse(
+      trees[i].pos_x,
+      trees[i].pos_y - 90,
+      50 * trees[i].scale,
+      25 * trees[i].scale
+    );
+    ellipse(
+      trees[i].pos_x,
+      trees[i].pos_y - 80,
+      60 * trees[i].scale,
+      30 * trees[i].scale
+    );
+    ellipse(
+      trees[i].pos_x,
+      trees[i].pos_y - 70,
+      70 * trees[i].scale,
+      35 * trees[i].scale
+    );
+    ellipse(
+      trees[i].pos_x,
+      trees[i].pos_y - 55,
+      80 * trees[i].scale,
+      40 * trees[i].scale
+    );
+    ellipse(
+      trees[i].pos_x,
+      trees[i].pos_y - 40,
+      90 * trees[i].scale,
+      45 * trees[i].scale
+    );
+    ellipse(
+      trees[i].pos_x,
+      trees[i].pos_y - 20,
+      100 * trees[i].scale,
+      50 * trees[i].scale
+    );
+  }
 }
 
 // ---------------------------------
@@ -879,7 +881,6 @@ function checkCanyon(t_canyon) {
 // ----------------------------------
 
 // Function to draw collectable objects.
-
 function drawCollectable(t_collectable) {
   fill(205, 175, 158);
   ellipse(
@@ -912,7 +913,6 @@ function drawCollectable(t_collectable) {
 }
 
 // Function to check character has collected an item.
-
 function checkCollectable(t_collectable) {
   // 34 is gameChar body width + collectableItem size
   if (
