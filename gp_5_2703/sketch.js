@@ -1,9 +1,3 @@
-/*
-
-The Game Project 5 - Bring it all together
-
-*/
-
 let gameChar;
 let floorPos_y;
 let scrollPos;
@@ -12,26 +6,40 @@ let mountains;
 let trees;
 let canyons;
 let collectableItems;
+let lives;
 
 function setup() {
   createCanvas(1024, 576);
   floorPos_y = (height * 3) / 4;
+  lives = 3;
+  startGame();
+}
+
+function startGame() {
+  //Game Character
   gameChar = {
     pos_x: width / 2,
     pos_y: floorPos_y,
+    world_x: 0,
+    score: 0,
     // Boolean variables to control the movement of the game character.
     isLeft: false,
     isRight: false,
     isFalling: false,
     isPlummeting: false,
-    world_x: 0,
+  };
+
+  //Flagpole
+  flagpole = {
+    x_pos: 1700,
+    isReached: false,
   };
 
   // Variable to control the background scrolling.
   scrollPos = 0;
 
-  // Variable to store the real position of the gameChar in the game
-  // world. Needed for collision detection.
+  // Variable to store the real position of the gameChar in the game world.
+  // Needed for collision detection.
   gameChar.world_x = gameChar.pos_x - scrollPos;
 
   // Initialise arrays of scenery objects.
@@ -211,13 +219,45 @@ function draw() {
     }
   }
 
+  // Draw Flagpole.
+  renderFlagpole();
+
   pop();
 
   // Draw game character.
   drawGameChar();
 
-  // Logic to make the game character move or the background scroll.
-  if (gameChar.isLeft) {
+  // Draw game Score.
+  drawGameScore();
+
+  // Check if the game is over.
+  if (lives < 1) {
+    push();
+    fill(255);
+    stroke(1);
+    textSize(35);
+    textAlign(CENTER);
+    text('Game over. Press space to continue.', width / 2, height / 2);
+    pop();
+    return;
+  }
+
+  // Check if the flagpole is reached.
+  if (flagpole.isReached) {
+    push();
+    fill(255);
+    stroke(1);
+    textSize(35);
+    textAlign(CENTER);
+    text('Level complete. Press space to continue.', width / 2, height / 2);
+    pop();
+    return;
+  }
+
+  /* Logic to make the game character move or the background scroll.
+     And make sure the gameChar is above the ground. to prevent moving while failling in the canyons.
+  */
+  if (gameChar.isLeft && gameChar.pos_y <= floorPos_y) {
     if (gameChar.pos_x > width * 0.2) {
       gameChar.pos_x -= 5;
     } else {
@@ -225,7 +265,7 @@ function draw() {
     }
   }
 
-  if (gameChar.isRight) {
+  if (gameChar.isRight && gameChar.pos_y <= floorPos_y) {
     if (gameChar.pos_x < width * 0.8) {
       gameChar.pos_x += 5;
     } else {
@@ -234,8 +274,7 @@ function draw() {
   }
 
   // Logic to make the game character rise and fall.
-
-  if (gameChar.isPlummeting === true && gameChar.pos_y === floorPos_y) {
+  if (gameChar.isPlummeting && gameChar.pos_y === floorPos_y) {
     gameChar.pos_y -= 100;
   }
 
@@ -245,6 +284,17 @@ function draw() {
   } else {
     gameChar.isFalling = false;
   }
+
+  // Flagpole checking function
+  if (flagpole.isReached == false) {
+    checkFlagpole();
+  }
+
+  // Check If the player die.
+  checkPlayerDie();
+
+  // Draw player lives.
+  drawPlayerLives();
 
   // Update real position of gameChar for collision detection.
   gameChar.world_x = gameChar.pos_x - scrollPos;
@@ -258,13 +308,13 @@ function keyPressed() {
   // if statements to control the animation of the character when
   // keys are pressed.
 
-  if (key == "D" || keyCode == 39) {
+  if (key == 'D' || keyCode == 39) {
     gameChar.isRight = true;
   }
-  if (key == "A" || keyCode == 37) {
+  if (key == 'A' || keyCode == 37) {
     gameChar.isLeft = true;
   }
-  if (key == "W" || keyCode === 32 || keyCode === 38) {
+  if (key == 'W' || keyCode === 38) {
     gameChar.isPlummeting = true;
   }
 }
@@ -273,13 +323,13 @@ function keyReleased() {
   // if statements to control the animation of the character when
   // keys are released.
 
-  if (key == "D" || keyCode == 39) {
+  if (key == 'D' || keyCode == 39) {
     gameChar.isRight = false;
   }
-  if (key == "A" || keyCode == 37) {
+  if (key == 'A' || keyCode == 37) {
     gameChar.isLeft = false;
   }
-  if (key == "W" || keyCode === 32 || keyCode === 38) {
+  if (key == 'W' || keyCode === 32 || keyCode === 38) {
     gameChar.isPlummeting = false;
   }
 }
@@ -716,6 +766,7 @@ function drawClouds() {
     noStroke();
   }
 }
+
 // Function to draw mountains objects.
 function drawMountains() {
   for (let i = 0; i < mountains.length; i++) {
@@ -758,6 +809,7 @@ function drawMountains() {
     );
   }
 }
+
 // Function to draw trees objects.
 function drawTrees() {
   for (let i = 0; i < trees.length; i++) {
@@ -924,5 +976,114 @@ function checkCollectable(t_collectable) {
     ) < 34
   ) {
     t_collectable.isFound = true;
+    scoreCounter();
+  }
+}
+
+// ----------------------------------
+// Score render and increment functions
+// ----------------------------------
+
+// Function to draw the score on the screen.
+function drawGameScore() {
+  fill(255);
+  noStroke();
+  textSize(17);
+  text('Score: ' + gameChar.score, 20, 30);
+}
+
+// Function to increment game score by one each time the character collects an item.
+function scoreCounter() {
+  gameChar.score++;
+}
+
+// ----------------------------------
+// Flagpole render and check functions
+// ----------------------------------
+
+// Function to draw the Flagpole on the screen.
+function renderFlagpole() {
+  push();
+  strokeWeight(5);
+  stroke(180);
+  line(flagpole.x_pos, floorPos_y, flagpole.x_pos, floorPos_y - 250);
+  fill(255, 0, 255);
+  noStroke();
+  if (flagpole.isReached) {
+    rect(flagpole.x_pos, floorPos_y - 250, 50, 50);
+  } else {
+    rect(flagpole.x_pos, floorPos_y - 50, 50, 50);
+  }
+  pop();
+}
+
+// Function to check if the gameChar is in range of the flagpole
+function checkFlagpole() {
+  //Calculate the destination between gameChar and Flagpole
+  destCalculate = abs(gameChar.world_x - flagpole.x_pos);
+
+  if (destCalculate < 50) {
+    flagpole.isReached = true;
+  }
+}
+
+// ----------------------------------
+// lives render and check functions
+// ----------------------------------
+
+/* Function to tests if your character has fallen below the bottom of the canvas.
+ When this is `true`, decrement the `lives` counter by one */
+function checkPlayerDie() {
+  if (gameChar.pos_y > height) {
+    lives--;
+    if (lives > 0) {
+      startGame();
+    }
+  }
+}
+
+/* Function to draw life tokens onto the screen so the player
+	can keep track of how many lives have remaining */
+function drawPlayerLives() {
+  livesBasePos = width - 30;
+  for (let i = 0; i < lives; i++) {
+    push();
+    //hair
+    fill(0);
+    ellipse(livesBasePos, 16.5, 5, 5);
+    ellipse(livesBasePos - 3, 17.5, 5, 5);
+    ellipse(livesBasePos + 3, 17.5, 5, 5);
+    //Head
+    fill(237, 201, 178);
+    ellipse(livesBasePos, 27.5, 20, 22);
+    //right eye
+    fill(36, 30, 11);
+    ellipse(livesBasePos - 5, 25.5, 3, 2.5);
+    //left eye
+    fill(36, 30, 11);
+    ellipse(livesBasePos + 5, 25.5, 3, 2.5);
+    //right ear
+    fill(237, 201, 178);
+    ellipse(livesBasePos - 9, 27.5, 5, 6);
+    //left ear
+    fill(237, 201, 178);
+    ellipse(livesBasePos + 9, 27.5, 5, 6);
+    //right cheek
+    fill(255, 149, 149);
+    ellipse(livesBasePos - 5, 29.5, 3.5, 1.75);
+    //left cheek
+    ellipse(livesBasePos + 5, 29.5, 3.5, 1.75);
+    //mouth
+    stroke(228, 154, 143);
+    beginShape();
+    curveVertex(livesBasePos - 3, 32.5);
+    curveVertex(livesBasePos - 3, 32.5);
+    curveVertex(livesBasePos - 1, 34.5);
+    curveVertex(livesBasePos + 1, 34.5);
+    curveVertex(livesBasePos + 3, 32.5);
+    curveVertex(livesBasePos + 3, 32.5);
+    endShape();
+    livesBasePos -= 30;
+    pop();
   }
 }
