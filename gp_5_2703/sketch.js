@@ -1,6 +1,4 @@
 let game;
-let gameChar;
-let scrollPos;
 
 function setup() {
   createCanvas(1024, 576);
@@ -8,6 +6,19 @@ function setup() {
     floorPos_y: (height * 3) / 4,
     lives: 3,
     score: 0,
+    //Game Character
+    character: {
+      pos_x: width / 2,
+      pos_y: this.floorPos_y, // undefined initialize it in start method
+      world_x: 0,
+      // Boolean variables to control the movement of the game character.
+      isLeft: false,
+      isRight: false,
+      isFalling: false,
+      isPlummeting: false,
+    },
+    // Variable to control the background scrolling.
+    scrollPos: 0,
     // ---------------------------
     // Initialise arrays of scenery objects.
     // ---------------------------
@@ -139,445 +150,450 @@ function setup() {
       },
     ],
 
+    //Flagpole
+    flagpole: {
+      x_pos: 2100,
+      isReached: false,
+    },
+
     // ---------------------------
     // Start Game function
     // ---------------------------
     start: function () {
-      //Game Character
-      gameChar = {
-        pos_x: width / 2,
-        pos_y: game.floorPos_y,
-        world_x: 0,
-        // Boolean variables to control the movement of the game character.
-        isLeft: false,
-        isRight: false,
-        isFalling: false,
-        isPlummeting: false,
-
-        // Method to draw the game character.
-        render: function () {
-          if (this.isLeft && this.isFalling) {
-            // Jumping-left game character
-            //hair
-            fill(0);
-            ellipse(this.pos_x, this.pos_y - 63.5, 5, 5);
-            ellipse(this.pos_x - 3, this.pos_y - 62.5, 5, 5);
-            ellipse(this.pos_x + 3, this.pos_y - 62.5, 5, 5);
-            //Head
-            fill(237, 201, 178);
-            ellipse(this.pos_x, this.pos_y - 52.5, 20, 22);
-            //nose
-            fill(237, 201, 178);
-            ellipse(this.pos_x - 9, this.pos_y - 52.5, 5, 6);
-            //left eye
-            fill(36, 30, 11);
-            ellipse(this.pos_x - 5, this.pos_y - 54.5, 3, 2.5);
-            //left cheek
-            fill(255, 149, 149);
-            ellipse(this.pos_x - 6, this.pos_y - 50.5, 3.5, 1.75);
-            //mouth
-            stroke(228, 154, 143);
-            beginShape();
-            curveVertex(this.pos_x - 9, this.pos_y - 47.5);
-            curveVertex(this.pos_x - 9, this.pos_y - 47.5);
-            curveVertex(this.pos_x - 7, this.pos_y - 45.5);
-            curveVertex(this.pos_x - 3, this.pos_y - 47.5);
-            curveVertex(this.pos_x - 3, this.pos_y - 47.5);
-            endShape();
-            //right leg
-            noStroke();
-            fill(141, 178, 190);
-            rect(this.pos_x + 2, this.pos_y - 12.5, 5, 12);
-            //right shoe
-            fill(0);
-            ellipse(this.pos_x + 4, this.pos_y + 0.5, 8, 5);
-            //left leg
-            fill(141, 178, 190);
-            rect(this.pos_x - 5, this.pos_y - 15.5, 5, 12);
-            //left shoe
-            fill(0);
-            ellipse(this.pos_x - 4, this.pos_y - 2.5, 8, 5);
-            //Body
-            fill(204, 227, 235);
-            ellipse(this.pos_x, this.pos_y - 24, 20, 35);
-            //left arm
-            fill(141, 178, 190);
-            ellipse(this.pos_x, this.pos_y - 42.5, 5, 17);
-            //left hand
-            fill(209, 169, 130);
-            ellipse(this.pos_x, this.pos_y - 50.5, 5, 5);
-          } else if (this.isRight && this.isFalling) {
-            // Jumping-right game character
-            //hair
-            fill(0);
-            ellipse(this.pos_x, this.pos_y - 63.5, 5, 5);
-            ellipse(this.pos_x - 3, this.pos_y - 62.5, 5, 5);
-            ellipse(this.pos_x + 3, this.pos_y - 62.5, 5, 5);
-            //Head
-            fill(237, 201, 178);
-            ellipse(this.pos_x, this.pos_y - 52.5, 20, 22);
-            //nose
-            fill(237, 201, 178);
-            ellipse(this.pos_x + 9, this.pos_y - 52.5, 5, 6);
-            //right eye
-            fill(36, 30, 11);
-            ellipse(this.pos_x + 5, this.pos_y - 54.5, 3, 2.5);
-            //right cheek
-            fill(255, 149, 149);
-            ellipse(this.pos_x + 6, this.pos_y - 50.5, 3.5, 1.75);
-            //mouth
-            stroke(228, 154, 143);
-            beginShape();
-            curveVertex(this.pos_x + 9, this.pos_y - 47.5);
-            curveVertex(this.pos_x + 9, this.pos_y - 47.5);
-            curveVertex(this.pos_x + 7, this.pos_y - 45.5);
-            curveVertex(this.pos_x + 3, this.pos_y - 47.5);
-            curveVertex(this.pos_x + 3, this.pos_y - 47.5);
-            endShape();
-            //left leg
-            noStroke();
-            fill(141, 178, 190);
-            rect(this.pos_x - 5, this.pos_y - 12.5, 5, 12);
-            //left shoe
-            fill(0);
-            ellipse(this.pos_x - 2, this.pos_y + 0.5, 8, 5);
-            //right leg
-            fill(141, 178, 190);
-            rect(this.pos_x + 2, this.pos_y - 15.5, 5, 12);
-            //right shoe
-            fill(0);
-            ellipse(this.pos_x + 6, this.pos_y - 3.5, 8, 5);
-            //Body
-            fill(204, 227, 235);
-            ellipse(this.pos_x, this.pos_y - 24, 20, 35);
-            //left arm
-            fill(141, 178, 190);
-            ellipse(this.pos_x, this.pos_y - 42.5, 5, 17);
-            //left hand
-            fill(209, 169, 130);
-            ellipse(this.pos_x, this.pos_y - 50.5, 5, 5);
-          } else if (this.isLeft) {
-            //Left standing game character
-            //hair
-            fill(0);
-            ellipse(this.pos_x, this.pos_y - 63.5, 5, 5);
-            ellipse(this.pos_x - 3, this.pos_y - 62.5, 5, 5);
-            ellipse(this.pos_x + 3, this.pos_y - 62.5, 5, 5);
-            //Head
-            fill(237, 201, 178);
-            ellipse(this.pos_x, this.pos_y - 52.5, 20, 22);
-            //nose
-            fill(237, 201, 178);
-            ellipse(this.pos_x - 9, this.pos_y - 52.5, 5, 6);
-            //left eye
-            fill(36, 30, 11);
-            ellipse(this.pos_x - 5, this.pos_y - 54.5, 3, 2.5);
-            //left cheek
-            fill(255, 149, 149);
-            ellipse(this.pos_x - 6, this.pos_y - 50.5, 3.5, 1.75);
-            //mouth
-            stroke(228, 154, 143);
-            beginShape();
-            curveVertex(this.pos_x - 9, this.pos_y - 47.5);
-            curveVertex(this.pos_x - 9, this.pos_y - 47.5);
-            curveVertex(this.pos_x - 7, this.pos_y - 45.5);
-            curveVertex(this.pos_x - 3, this.pos_y - 47.5);
-            curveVertex(this.pos_x - 3, this.pos_y - 47.5);
-            endShape();
-            //right leg
-            stroke(173, 205, 216);
-            fill(141, 178, 190);
-            rect(this.pos_x - 6, this.pos_y - 12.5, 5, 12);
-            //right shoe
-            stroke(181, 186, 188);
-            fill(0);
-            ellipse(this.pos_x - 5, this.pos_y + 0.5, 8, 5);
-            //left leg
-            stroke(173, 205, 216);
-            fill(141, 178, 190);
-            rect(this.pos_x - 2, this.pos_y - 12.5, 5, 12);
-            //left shoe
-            stroke(181, 186, 188);
-            fill(0);
-            ellipse(this.pos_x, this.pos_y + 0.5, 8, 5);
-            //Body
-            noStroke();
-            fill(204, 227, 235);
-            ellipse(this.pos_x, this.pos_y - 24, 20, 35);
-            //left arm
-            fill(141, 178, 190);
-            ellipse(this.pos_x, this.pos_y - 30.5, 5, 17);
-            //left hand
-            fill(209, 169, 130);
-            ellipse(this.pos_x, this.pos_y - 22.5, 5, 5);
-          } else if (this.isRight) {
-            //Right standing game character
-            //hair
-            fill(0);
-            ellipse(this.pos_x, this.pos_y - 63.5, 5, 5);
-            ellipse(this.pos_x - 3, this.pos_y - 62.5, 5, 5);
-            ellipse(this.pos_x + 3, this.pos_y - 62.5, 5, 5);
-            //Head
-            fill(237, 201, 178);
-            ellipse(this.pos_x, this.pos_y - 52.5, 20, 22);
-            //nose
-            fill(237, 201, 178);
-            ellipse(this.pos_x + 9, this.pos_y - 52.5, 5, 6);
-            //right eye
-            fill(36, 30, 11);
-            ellipse(this.pos_x + 5, this.pos_y - 54.5, 3, 2.5);
-            //right cheek
-            fill(255, 149, 149);
-            ellipse(this.pos_x + 6, this.pos_y - 50.5, 3.5, 1.75);
-            //mouth
-            stroke(228, 154, 143);
-            beginShape();
-            curveVertex(this.pos_x + 9, this.pos_y - 47.5);
-            curveVertex(this.pos_x + 9, this.pos_y - 47.5);
-            curveVertex(this.pos_x + 7, this.pos_y - 45.5);
-            curveVertex(this.pos_x + 3, this.pos_y - 47.5);
-            curveVertex(this.pos_x + 3, this.pos_y - 47.5);
-            endShape();
-            //left leg
-            stroke(173, 205, 216);
-            fill(141, 178, 190);
-            rect(this.pos_x - 4, this.pos_y - 12.5, 5, 12);
-            //left shoe
-            stroke(181, 186, 188);
-            fill(0);
-            ellipse(this.pos_x, this.pos_y + 0.5, 8, 5);
-            //right leg
-            stroke(173, 205, 216);
-            fill(141, 178, 190);
-            rect(this.pos_x, this.pos_y - 12.5, 5, 12);
-            //right shoe
-            stroke(181, 186, 188);
-            fill(0);
-            ellipse(this.pos_x + 4, this.pos_y + 0.5, 8, 5);
-            //Body
-            noStroke();
-            fill(204, 227, 235);
-            ellipse(this.pos_x, this.pos_y - 24, 20, 35);
-            //left arm
-            fill(141, 178, 190);
-            ellipse(this.pos_x, this.pos_y - 30.5, 5, 17);
-            //left hand
-            fill(209, 169, 130);
-            ellipse(this.pos_x, this.pos_y - 22.5, 5, 5);
-          } else if (this.isFalling || this.isPlummeting) {
-            //Falling or Plummeting character
-            //hair
-            fill(0);
-            ellipse(this.pos_x, this.pos_y - 63.5, 5, 5);
-            ellipse(this.pos_x - 3, this.pos_y - 62.5, 5, 5);
-            ellipse(this.pos_x + 3, this.pos_y - 62.5, 5, 5);
-            //Head
-            fill(237, 201, 178);
-            ellipse(this.pos_x, this.pos_y - 52.5, 20, 22);
-            //right eye
-            fill(36, 30, 11);
-            ellipse(this.pos_x - 5, this.pos_y - 54.5, 3, 2.5);
-            //left eye
-            fill(36, 30, 11);
-            ellipse(this.pos_x + 5, this.pos_y - 54.5, 3, 2.5);
-            //right ear
-            fill(237, 201, 178);
-            ellipse(this.pos_x - 9, this.pos_y - 52.5, 5, 6);
-            //left ear
-            fill(237, 201, 178);
-            ellipse(this.pos_x + 9, this.pos_y - 52.5, 5, 6);
-            //right cheek
-            fill(255, 149, 149);
-            ellipse(this.pos_x - 5, this.pos_y - 50.5, 3.5, 1.75);
-            //left cheek
-            ellipse(this.pos_x + 5, this.pos_y - 50.5, 3.5, 1.75);
-            //mouth
-            stroke(228, 154, 143);
-            beginShape();
-            curveVertex(this.pos_x - 3, this.pos_y - 47.5);
-            curveVertex(this.pos_x - 3, this.pos_y - 47.5);
-            curveVertex(this.pos_x - 1, this.pos_y - 45.5);
-            curveVertex(this.pos_x + 1, this.pos_y - 45.5);
-            curveVertex(this.pos_x + 3, this.pos_y - 47.5);
-            curveVertex(this.pos_x + 3, this.pos_y - 47.5);
-            endShape();
-            //left leg
-            noStroke();
-            fill(141, 178, 190);
-            rect(this.pos_x + 3, this.pos_y - 12.5, 5, 12);
-            //left shoe
-            fill(0);
-            ellipse(this.pos_x + 7, this.pos_y + 0.5, 8, 5);
-            //right leg
-            fill(141, 178, 190);
-            rect(this.pos_x - 8, this.pos_y - 12.5, 5, 12);
-            //right shoe
-            fill(0);
-            ellipse(this.pos_x - 7, this.pos_y + 0.5, 8, 5);
-            //Body
-            fill(204, 227, 235);
-            ellipse(this.pos_x, this.pos_y - 24, 20, 35);
-            //left arm
-            fill(141, 178, 190);
-            ellipse(this.pos_x + 7, this.pos_y - 42.5, 5, 17);
-            //left hand
-            fill(209, 169, 130);
-            ellipse(this.pos_x + 7, this.pos_y - 50.5, 5, 5);
-            //right arm
-            fill(141, 178, 190);
-            ellipse(this.pos_x - 7, this.pos_y - 42.5, 5, 17);
-            //right hand
-            fill(209, 169, 130);
-            ellipse(this.pos_x - 7, this.pos_y - 50.5, 5, 5);
-          } else {
-            //standing front facing code
-            //hair
-            fill(0);
-            ellipse(this.pos_x, this.pos_y - 63.5, 5, 5);
-            ellipse(this.pos_x - 3, this.pos_y - 62.5, 5, 5);
-            ellipse(this.pos_x + 3, this.pos_y - 62.5, 5, 5);
-            //Head
-            fill(237, 201, 178);
-            ellipse(this.pos_x, this.pos_y - 52.5, 20, 22);
-            //right eye
-            fill(36, 30, 11);
-            ellipse(this.pos_x - 5, this.pos_y - 54.5, 3, 2.5);
-            //left eye
-            fill(36, 30, 11);
-            ellipse(this.pos_x + 5, this.pos_y - 54.5, 3, 2.5);
-            //right ear
-            fill(237, 201, 178);
-            ellipse(this.pos_x - 9, this.pos_y - 52.5, 5, 6);
-            //left ear
-            fill(237, 201, 178);
-            ellipse(this.pos_x + 9, this.pos_y - 52.5, 5, 6);
-            //right cheek
-            fill(255, 149, 149);
-            ellipse(this.pos_x - 5, this.pos_y - 50.5, 3.5, 1.75);
-            //left cheek
-            ellipse(this.pos_x + 5, this.pos_y - 50.5, 3.5, 1.75);
-            //mouth
-            stroke(228, 154, 143);
-            beginShape();
-            curveVertex(this.pos_x - 3, this.pos_y - 47.5);
-            curveVertex(this.pos_x - 3, this.pos_y - 47.5);
-            curveVertex(this.pos_x - 1, this.pos_y - 45.5);
-            curveVertex(this.pos_x + 1, this.pos_y - 45.5);
-            curveVertex(this.pos_x + 3, this.pos_y - 47.5);
-            curveVertex(this.pos_x + 3, this.pos_y - 47.5);
-            endShape();
-            //left leg
-            noStroke();
-            fill(141, 178, 190);
-            rect(this.pos_x + 2, this.pos_y - 12.5, 5, 12);
-            //left shoe
-            fill(0);
-            ellipse(this.pos_x + 6, this.pos_y + 0.5, 8, 5);
-            //right leg
-            fill(141, 178, 190);
-            rect(this.pos_x - 6, this.pos_y - 12.5, 5, 12);
-            //right shoe
-            fill(0);
-            ellipse(this.pos_x - 5, this.pos_y + 0.5, 8, 5);
-            //Body
-            fill(204, 227, 235);
-            ellipse(this.pos_x, this.pos_y - 24, 20, 35);
-            //left arm
-            fill(141, 178, 190);
-            ellipse(this.pos_x + 7, this.pos_y - 30.5, 5, 17);
-            //left hand
-            fill(209, 169, 130);
-            ellipse(this.pos_x + 7, this.pos_y - 22.5, 5, 5);
-            //right arm
-            fill(141, 178, 190);
-            ellipse(this.pos_x - 7, this.pos_y - 30.5, 5, 17);
-            //right hand
-            fill(209, 169, 130);
-            ellipse(this.pos_x - 7, this.pos_y - 22.5, 5, 5);
-          }
-        },
-
-        //Logic to move the game character.
-        moveGameChar: function () {
-          /* this.pos_y <= game.floorPos_y 
-      Make sure the gameChar is above the ground. to prevent moving while failling in the canyons.*/
-          if (this.isLeft && this.pos_y <= game.floorPos_y) {
-            if (this.pos_x > width * 0.2) {
-              this.pos_x -= 5;
-            } else {
-              scrollPos += 5;
-            }
-          }
-
-          if (this.isRight && this.pos_y <= game.floorPos_y) {
-            if (this.pos_x < width * 0.8) {
-              this.pos_x += 5;
-            } else {
-              scrollPos -= 5; // negative for moving against the background
-            }
-          }
-
-          // Logic to make the game character rise and fall.
-          if (this.isPlummeting && this.pos_y == game.floorPos_y) {
-            this.pos_y -= 100;
-          }
-
-          if (this.pos_y < game.floorPos_y) {
-            this.pos_y++;
-            this.isFalling = true;
-          } else {
-            this.isFalling = false;
-          }
-        },
-      };
-
-      //Flagpole
-      flagpole = {
-        x_pos: 2100,
-        isReached: false,
-
-        // ----------------------------------
-        // Flagpole render and check functions
-        // ----------------------------------
-
-        // Function to draw the Flagpole on the screen.
-        render: function () {
-          push();
-          strokeWeight(5);
-          stroke(180);
-          line(
-            flagpole.x_pos,
-            game.floorPos_y,
-            flagpole.x_pos,
-            game.floorPos_y - 250
-          );
-          fill(255, 0, 255);
-          noStroke();
-          if (flagpole.isReached) {
-            rect(flagpole.x_pos, game.floorPos_y - 250, 50, 50);
-          } else {
-            rect(flagpole.x_pos, game.floorPos_y - 50, 50, 50);
-          }
-          pop();
-        },
-
-        // Function to check if the gameChar is in range of the flagpole
-        check: function () {
-          //Calculate the destination between gameChar and Flagpole
-          destCalculate = abs(gameChar.world_x - flagpole.x_pos);
-
-          if (destCalculate < 50) {
-            flagpole.isReached = true;
-          }
-        },
-      };
-
-      // Variable to control the background scrolling.
-      scrollPos = 0;
-
-      // Variable to store the real position of the gameChar in the game world.
+      this.character.pos_x = width / 2;
+      this.character.pos_y = this.floorPos_y;
+      this.character.world_x = 0;
+      this.scrollPos = 0;
+      this.character.isLeft = false;
+      this.character.isRight = false;
+      this.character.isFalling = false;
+      this.character.isPlummeting = false;
+      // Variable to store the real position of the character in the game world.
       // Needed for collision detection.
-      gameChar.world_x = gameChar.pos_x - scrollPos;
+      this.character.world_x = this.character.pos_x - this.scrollPos;
+    },
+
+    // ---------------------------
+    // Character render and move functions
+    // ---------------------------
+    // Draw the game character
+    drawCharacter: function () {
+      if (this.character.isLeft && this.character.isFalling) {
+        // Jumping-left game character
+        //hair
+        fill(0);
+        ellipse(this.character.pos_x, this.character.pos_y - 63.5, 5, 5);
+        ellipse(this.character.pos_x - 3, this.character.pos_y - 62.5, 5, 5);
+        ellipse(this.character.pos_x + 3, this.character.pos_y - 62.5, 5, 5);
+        //Head
+        fill(237, 201, 178);
+        ellipse(this.character.pos_x, this.character.pos_y - 52.5, 20, 22);
+        //nose
+        fill(237, 201, 178);
+        ellipse(this.character.pos_x - 9, this.character.pos_y - 52.5, 5, 6);
+        //left eye
+        fill(36, 30, 11);
+        ellipse(this.character.pos_x - 5, this.character.pos_y - 54.5, 3, 2.5);
+        //left cheek
+        fill(255, 149, 149);
+        ellipse(
+          this.character.pos_x - 6,
+          this.character.pos_y - 50.5,
+          3.5,
+          1.75
+        );
+        //mouth
+        stroke(228, 154, 143);
+        beginShape();
+        curveVertex(this.character.pos_x - 9, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x - 9, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x - 7, this.character.pos_y - 45.5);
+        curveVertex(this.character.pos_x - 3, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x - 3, this.character.pos_y - 47.5);
+        endShape();
+        //right leg
+        noStroke();
+        fill(141, 178, 190);
+        rect(this.character.pos_x + 2, this.character.pos_y - 12.5, 5, 12);
+        //right shoe
+        fill(0);
+        ellipse(this.character.pos_x + 4, this.character.pos_y + 0.5, 8, 5);
+        //left leg
+        fill(141, 178, 190);
+        rect(this.character.pos_x - 5, this.character.pos_y - 15.5, 5, 12);
+        //left shoe
+        fill(0);
+        ellipse(this.character.pos_x - 4, this.character.pos_y - 2.5, 8, 5);
+        //Body
+        fill(204, 227, 235);
+        ellipse(this.character.pos_x, this.character.pos_y - 24, 20, 35);
+        //left arm
+        fill(141, 178, 190);
+        ellipse(this.character.pos_x, this.character.pos_y - 42.5, 5, 17);
+        //left hand
+        fill(209, 169, 130);
+        ellipse(this.character.pos_x, this.character.pos_y - 50.5, 5, 5);
+      } else if (this.character.isRight && this.character.isFalling) {
+        // Jumping-right game character
+        //hair
+        fill(0);
+        ellipse(this.character.pos_x, this.character.pos_y - 63.5, 5, 5);
+        ellipse(this.character.pos_x - 3, this.character.pos_y - 62.5, 5, 5);
+        ellipse(this.character.pos_x + 3, this.character.pos_y - 62.5, 5, 5);
+        //Head
+        fill(237, 201, 178);
+        ellipse(this.character.pos_x, this.character.pos_y - 52.5, 20, 22);
+        //nose
+        fill(237, 201, 178);
+        ellipse(this.character.pos_x + 9, this.character.pos_y - 52.5, 5, 6);
+        //right eye
+        fill(36, 30, 11);
+        ellipse(this.character.pos_x + 5, this.character.pos_y - 54.5, 3, 2.5);
+        //right cheek
+        fill(255, 149, 149);
+        ellipse(
+          this.character.pos_x + 6,
+          this.character.pos_y - 50.5,
+          3.5,
+          1.75
+        );
+        //mouth
+        stroke(228, 154, 143);
+        beginShape();
+        curveVertex(this.character.pos_x + 9, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x + 9, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x + 7, this.character.pos_y - 45.5);
+        curveVertex(this.character.pos_x + 3, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x + 3, this.character.pos_y - 47.5);
+        endShape();
+        //left leg
+        noStroke();
+        fill(141, 178, 190);
+        rect(this.character.pos_x - 5, this.character.pos_y - 12.5, 5, 12);
+        //left shoe
+        fill(0);
+        ellipse(this.character.pos_x - 2, this.character.pos_y + 0.5, 8, 5);
+        //right leg
+        fill(141, 178, 190);
+        rect(this.character.pos_x + 2, this.character.pos_y - 15.5, 5, 12);
+        //right shoe
+        fill(0);
+        ellipse(this.character.pos_x + 6, this.character.pos_y - 3.5, 8, 5);
+        //Body
+        fill(204, 227, 235);
+        ellipse(this.character.pos_x, this.character.pos_y - 24, 20, 35);
+        //left arm
+        fill(141, 178, 190);
+        ellipse(this.character.pos_x, this.character.pos_y - 42.5, 5, 17);
+        //left hand
+        fill(209, 169, 130);
+        ellipse(this.character.pos_x, this.character.pos_y - 50.5, 5, 5);
+      } else if (this.character.isLeft) {
+        //Left standing game character
+        //hair
+        fill(0);
+        ellipse(this.character.pos_x, this.character.pos_y - 63.5, 5, 5);
+        ellipse(this.character.pos_x - 3, this.character.pos_y - 62.5, 5, 5);
+        ellipse(this.character.pos_x + 3, this.character.pos_y - 62.5, 5, 5);
+        //Head
+        fill(237, 201, 178);
+        ellipse(this.character.pos_x, this.character.pos_y - 52.5, 20, 22);
+        //nose
+        fill(237, 201, 178);
+        ellipse(this.character.pos_x - 9, this.character.pos_y - 52.5, 5, 6);
+        //left eye
+        fill(36, 30, 11);
+        ellipse(this.character.pos_x - 5, this.character.pos_y - 54.5, 3, 2.5);
+        //left cheek
+        fill(255, 149, 149);
+        ellipse(
+          this.character.pos_x - 6,
+          this.character.pos_y - 50.5,
+          3.5,
+          1.75
+        );
+        //mouth
+        stroke(228, 154, 143);
+        beginShape();
+        curveVertex(this.character.pos_x - 9, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x - 9, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x - 7, this.character.pos_y - 45.5);
+        curveVertex(this.character.pos_x - 3, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x - 3, this.character.pos_y - 47.5);
+        endShape();
+        //right leg
+        stroke(173, 205, 216);
+        fill(141, 178, 190);
+        rect(this.character.pos_x - 6, this.character.pos_y - 12.5, 5, 12);
+        //right shoe
+        stroke(181, 186, 188);
+        fill(0);
+        ellipse(this.character.pos_x - 5, this.character.pos_y + 0.5, 8, 5);
+        //left leg
+        stroke(173, 205, 216);
+        fill(141, 178, 190);
+        rect(this.character.pos_x - 2, this.character.pos_y - 12.5, 5, 12);
+        //left shoe
+        stroke(181, 186, 188);
+        fill(0);
+        ellipse(this.character.pos_x, this.character.pos_y + 0.5, 8, 5);
+        //Body
+        noStroke();
+        fill(204, 227, 235);
+        ellipse(this.character.pos_x, this.character.pos_y - 24, 20, 35);
+        //left arm
+        fill(141, 178, 190);
+        ellipse(this.character.pos_x, this.character.pos_y - 30.5, 5, 17);
+        //left hand
+        fill(209, 169, 130);
+        ellipse(this.character.pos_x, this.character.pos_y - 22.5, 5, 5);
+      } else if (this.character.isRight) {
+        //Right standing game character
+        //hair
+        fill(0);
+        ellipse(this.character.pos_x, this.character.pos_y - 63.5, 5, 5);
+        ellipse(this.character.pos_x - 3, this.character.pos_y - 62.5, 5, 5);
+        ellipse(this.character.pos_x + 3, this.character.pos_y - 62.5, 5, 5);
+        //Head
+        fill(237, 201, 178);
+        ellipse(this.character.pos_x, this.character.pos_y - 52.5, 20, 22);
+        //nose
+        fill(237, 201, 178);
+        ellipse(this.character.pos_x + 9, this.character.pos_y - 52.5, 5, 6);
+        //right eye
+        fill(36, 30, 11);
+        ellipse(this.character.pos_x + 5, this.character.pos_y - 54.5, 3, 2.5);
+        //right cheek
+        fill(255, 149, 149);
+        ellipse(
+          this.character.pos_x + 6,
+          this.character.pos_y - 50.5,
+          3.5,
+          1.75
+        );
+        //mouth
+        stroke(228, 154, 143);
+        beginShape();
+        curveVertex(this.character.pos_x + 9, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x + 9, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x + 7, this.character.pos_y - 45.5);
+        curveVertex(this.character.pos_x + 3, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x + 3, this.character.pos_y - 47.5);
+        endShape();
+        //left leg
+        stroke(173, 205, 216);
+        fill(141, 178, 190);
+        rect(this.character.pos_x - 4, this.character.pos_y - 12.5, 5, 12);
+        //left shoe
+        stroke(181, 186, 188);
+        fill(0);
+        ellipse(this.character.pos_x, this.character.pos_y + 0.5, 8, 5);
+        //right leg
+        stroke(173, 205, 216);
+        fill(141, 178, 190);
+        rect(this.character.pos_x, this.character.pos_y - 12.5, 5, 12);
+        //right shoe
+        stroke(181, 186, 188);
+        fill(0);
+        ellipse(this.character.pos_x + 4, this.character.pos_y + 0.5, 8, 5);
+        //Body
+        noStroke();
+        fill(204, 227, 235);
+        ellipse(this.character.pos_x, this.character.pos_y - 24, 20, 35);
+        //left arm
+        fill(141, 178, 190);
+        ellipse(this.character.pos_x, this.character.pos_y - 30.5, 5, 17);
+        //left hand
+        fill(209, 169, 130);
+        ellipse(this.character.pos_x, this.character.pos_y - 22.5, 5, 5);
+      } else if (this.character.isFalling || this.character.isPlummeting) {
+        //Falling or Plummeting character
+        //hair
+        fill(0);
+        ellipse(this.character.pos_x, this.character.pos_y - 63.5, 5, 5);
+        ellipse(this.character.pos_x - 3, this.character.pos_y - 62.5, 5, 5);
+        ellipse(this.character.pos_x + 3, this.character.pos_y - 62.5, 5, 5);
+        //Head
+        fill(237, 201, 178);
+        ellipse(this.character.pos_x, this.character.pos_y - 52.5, 20, 22);
+        //right eye
+        fill(36, 30, 11);
+        ellipse(this.character.pos_x - 5, this.character.pos_y - 54.5, 3, 2.5);
+        //left eye
+        fill(36, 30, 11);
+        ellipse(this.character.pos_x + 5, this.character.pos_y - 54.5, 3, 2.5);
+        //right ear
+        fill(237, 201, 178);
+        ellipse(this.character.pos_x - 9, this.character.pos_y - 52.5, 5, 6);
+        //left ear
+        fill(237, 201, 178);
+        ellipse(this.character.pos_x + 9, this.character.pos_y - 52.5, 5, 6);
+        //right cheek
+        fill(255, 149, 149);
+        ellipse(
+          this.character.pos_x - 5,
+          this.character.pos_y - 50.5,
+          3.5,
+          1.75
+        );
+        //left cheek
+        ellipse(
+          this.character.pos_x + 5,
+          this.character.pos_y - 50.5,
+          3.5,
+          1.75
+        );
+        //mouth
+        stroke(228, 154, 143);
+        beginShape();
+        curveVertex(this.character.pos_x - 3, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x - 3, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x - 1, this.character.pos_y - 45.5);
+        curveVertex(this.character.pos_x + 1, this.character.pos_y - 45.5);
+        curveVertex(this.character.pos_x + 3, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x + 3, this.character.pos_y - 47.5);
+        endShape();
+        //left leg
+        noStroke();
+        fill(141, 178, 190);
+        rect(this.character.pos_x + 3, this.character.pos_y - 12.5, 5, 12);
+        //left shoe
+        fill(0);
+        ellipse(this.character.pos_x + 7, this.character.pos_y + 0.5, 8, 5);
+        //right leg
+        fill(141, 178, 190);
+        rect(this.character.pos_x - 8, this.character.pos_y - 12.5, 5, 12);
+        //right shoe
+        fill(0);
+        ellipse(this.character.pos_x - 7, this.character.pos_y + 0.5, 8, 5);
+        //Body
+        fill(204, 227, 235);
+        ellipse(this.character.pos_x, this.character.pos_y - 24, 20, 35);
+        //left arm
+        fill(141, 178, 190);
+        ellipse(this.character.pos_x + 7, this.character.pos_y - 42.5, 5, 17);
+        //left hand
+        fill(209, 169, 130);
+        ellipse(this.character.pos_x + 7, this.character.pos_y - 50.5, 5, 5);
+        //right arm
+        fill(141, 178, 190);
+        ellipse(this.character.pos_x - 7, this.character.pos_y - 42.5, 5, 17);
+        //right hand
+        fill(209, 169, 130);
+        ellipse(this.character.pos_x - 7, this.character.pos_y - 50.5, 5, 5);
+      } else {
+        //standing front facing code
+        //hair
+        fill(0);
+        ellipse(this.character.pos_x, this.character.pos_y - 63.5, 5, 5);
+        ellipse(this.character.pos_x - 3, this.character.pos_y - 62.5, 5, 5);
+        ellipse(this.character.pos_x + 3, this.character.pos_y - 62.5, 5, 5);
+
+        //Head
+        fill(237, 201, 178);
+        ellipse(this.character.pos_x, this.character.pos_y - 52.5, 20, 22);
+        //right eye
+        fill(36, 30, 11);
+        ellipse(this.character.pos_x - 5, this.character.pos_y - 54.5, 3, 2.5);
+        //left eye
+        fill(36, 30, 11);
+        ellipse(this.character.pos_x + 5, this.character.pos_y - 54.5, 3, 2.5);
+        //right ear
+        fill(237, 201, 178);
+        ellipse(this.character.pos_x - 9, this.character.pos_y - 52.5, 5, 6);
+        //left ear
+        fill(237, 201, 178);
+        ellipse(this.character.pos_x + 9, this.character.pos_y - 52.5, 5, 6);
+        //right cheek
+        fill(255, 149, 149);
+        ellipse(
+          this.character.pos_x - 5,
+          this.character.pos_y - 50.5,
+          3.5,
+          1.75
+        );
+        //left cheek
+        ellipse(
+          this.character.pos_x + 5,
+          this.character.pos_y - 50.5,
+          3.5,
+          1.75
+        );
+        //mouth
+        stroke(228, 154, 143);
+        beginShape();
+        curveVertex(this.character.pos_x - 3, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x - 3, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x - 1, this.character.pos_y - 45.5);
+        curveVertex(this.character.pos_x + 1, this.character.pos_y - 45.5);
+        curveVertex(this.character.pos_x + 3, this.character.pos_y - 47.5);
+        curveVertex(this.character.pos_x + 3, this.character.pos_y - 47.5);
+        endShape();
+        //left leg
+        noStroke();
+        fill(141, 178, 190);
+        rect(this.character.pos_x + 2, this.character.pos_y - 12.5, 5, 12);
+        //left shoe
+        fill(0);
+        ellipse(this.character.pos_x + 6, this.character.pos_y + 0.5, 8, 5);
+        //right leg
+        fill(141, 178, 190);
+        rect(this.character.pos_x - 6, this.character.pos_y - 12.5, 5, 12);
+        //right shoe
+        fill(0);
+        ellipse(this.character.pos_x - 5, this.character.pos_y + 0.5, 8, 5);
+        //Body
+        fill(204, 227, 235);
+        ellipse(this.character.pos_x, this.character.pos_y - 24, 20, 35);
+        //left arm
+        fill(141, 178, 190);
+        ellipse(this.character.pos_x + 7, this.character.pos_y - 30.5, 5, 17);
+        //left hand
+        fill(209, 169, 130);
+        ellipse(this.character.pos_x + 7, this.character.pos_y - 22.5, 5, 5);
+        //right arm
+        fill(141, 178, 190);
+        ellipse(this.character.pos_x - 7, this.character.pos_y - 30.5, 5, 17);
+        //right hand
+        fill(209, 169, 130);
+        ellipse(this.character.pos_x - 7, this.character.pos_y - 22.5, 5, 5);
+      }
+    },
+
+    // Logic to move the game character
+    moveCharacter: function () {
+      /* this.character.pos_y <= this.floorPos_y 
+      Make sure the character is above the ground. to prevent moving while failling in the canyons.*/
+      if (this.character.isLeft && this.character.pos_y <= this.floorPos_y) {
+        if (this.character.pos_x > width * 0.2) {
+          this.character.pos_x -= 5;
+        } else {
+          this.scrollPos += 5;
+        }
+      }
+
+      if (this.character.isRight && this.character.pos_y <= this.floorPos_y) {
+        if (this.character.pos_x < width * 0.8) {
+          this.character.pos_x += 5;
+        } else {
+          this.scrollPos -= 5; // negative for moving against the background
+        }
+      }
+
+      // Logic to make the game character rise and fall.
+      if (
+        this.character.isPlummeting &&
+        this.character.pos_y == this.floorPos_y
+      ) {
+        this.character.pos_y -= 100;
+      }
+
+      if (this.character.pos_y < this.floorPos_y) {
+        this.character.pos_y++;
+        this.character.isFalling = true;
+      } else {
+        this.character.isFalling = false;
+      }
     },
 
     // ---------------------------
@@ -588,13 +604,13 @@ function setup() {
     drawGround: function () {
       noStroke();
       fill(142, 211, 208);
-      rect(0, game.floorPos_y, width, 15);
+      rect(0, this.floorPos_y, width, 15);
       fill(84, 174, 171);
-      rect(0, game.floorPos_y + 15, width, 15);
+      rect(0, this.floorPos_y + 15, width, 15);
       fill(205, 149, 115);
-      rect(0, game.floorPos_y + 30, width, 15);
+      rect(0, this.floorPos_y + 30, width, 15);
       fill(247, 204, 198);
-      rect(0, game.floorPos_y + 45, width, height - game.floorPos_y);
+      rect(0, this.floorPos_y + 45, width, height - this.floorPos_y);
     },
 
     // Fill the sky
@@ -840,12 +856,12 @@ function setup() {
     // Check if the character is over a canyon
     checkCanyon: function (t_canyon) {
       if (
-        gameChar.world_x - 5 > t_canyon.pos_x &&
-        gameChar.world_x + 5 < t_canyon.pos_x + t_canyon.width &&
-        gameChar.pos_y >= this.floorPos_y
+        this.character.world_x - 5 > t_canyon.pos_x &&
+        this.character.world_x + 5 < t_canyon.pos_x + t_canyon.width &&
+        this.character.pos_y >= this.floorPos_y
       ) {
-        gameChar.isPlummeting = true;
-        gameChar.pos_y += 5;
+        this.character.isPlummeting = true;
+        this.character.pos_y += 5;
       }
     },
 
@@ -887,17 +903,17 @@ function setup() {
 
     // Check if character has collected an item.
     checkCollectable: function (t_collectable) {
-      // 34 is gameChar body width + collectableItem size
+      // 34 is character body width + collectableItem size
       if (
         dist(
           t_collectable.pos_x,
           t_collectable.pos_y,
-          gameChar.world_x,
-          gameChar.pos_y
+          this.character.world_x,
+          this.character.pos_y
         ) < 34
       ) {
         t_collectable.isFound = true;
-        game.scoreCounter();
+        this.scoreCounter();
       }
     },
 
@@ -910,12 +926,12 @@ function setup() {
       fill(255);
       noStroke();
       textSize(17);
-      text("Score: " + game.score, 20, 30);
+      text("Score: " + this.score, 20, 30);
     },
 
     // Increment game score by one each time the character collects an item.
     scoreCounter: function () {
-      game.score++;
+      this.score++;
     },
 
     // ----------------------------------
@@ -925,10 +941,10 @@ function setup() {
     /* Tests if your character has fallen below the bottom of the canvas.
     When this is `true`, decrement the `lives` counter by one */
     checkPlayerDie: function () {
-      if (gameChar.pos_y > height) {
-        game.lives--;
-        if (game.lives > 0) {
-          game.start();
+      if (this.character.pos_y > height) {
+        this.lives--;
+        if (this.lives > 0) {
+          this.start();
         }
       }
     },
@@ -937,7 +953,7 @@ function setup() {
 	  can keep track of how many lives have remaining */
     drawPlayerLives: function () {
       livesBasePos = width - 30;
-      for (let i = 0; i < game.lives; i++) {
+      for (let i = 0; i < this.lives; i++) {
         push();
         //hair
         fill(0);
@@ -982,7 +998,36 @@ function setup() {
     // ----------------------------------
     // Flagpole render and check functions
     // ----------------------------------
+    // Function to draw the Flagpole on the screen.
+    renderFlagpole: function () {
+      push();
+      strokeWeight(5);
+      stroke(180);
+      line(
+        this.flagpole.x_pos,
+        this.floorPos_y,
+        this.flagpole.x_pos,
+        this.floorPos_y - 250
+      );
+      fill(255, 0, 255);
+      noStroke();
+      if (this.flagpole.isReached) {
+        rect(this.flagpole.x_pos, this.floorPos_y - 250, 50, 50);
+      } else {
+        rect(this.flagpole.x_pos, this.floorPos_y - 50, 50, 50);
+      }
+      pop();
+    },
 
+    // Function to check if the character is in range of the flagpole
+    checkFlagpole: function () {
+      //Calculate the destination between character and Flagpole
+      destCalculate = abs(this.character.world_x - this.flagpole.x_pos);
+
+      if (destCalculate < 50) {
+        this.flagpole.isReached = true;
+      }
+    },
     // ---------------------------
     // Game over, completed and reset functions
     // ---------------------------
@@ -1009,10 +1054,15 @@ function setup() {
       pop();
     },
 
-    //Reset game score and live
+    //Reset game
     reset: function () {
       this.lives = 3;
       this.score = 0;
+      this.flagpole.isReached = false;
+      //Re Draw collectable items.
+      for (let i = 0; i < this.collectableItems.length; i++) {
+        this.collectableItems[i].isFound = false;
+      }
     },
   };
 
@@ -1027,7 +1077,7 @@ function draw() {
   game.drawGround();
 
   push();
-  translate(scrollPos, 0);
+  translate(game.scrollPos, 0);
 
   // Draw clouds.
   game.drawClouds();
@@ -1054,12 +1104,12 @@ function draw() {
   }
 
   // Draw Flagpole.
-  flagpole.render();
+  game.renderFlagpole();
 
   pop();
 
   // Draw game character.
-  gameChar.render();
+  game.drawCharacter();
 
   // Draw game Score.
   game.drawScore();
@@ -1071,17 +1121,17 @@ function draw() {
   }
 
   // Check if the flagpole is reached.
-  if (flagpole.isReached) {
+  if (game.flagpole.isReached) {
     game.completed();
     return;
   }
 
   // Logic to make the game character move or the background scroll.
-  gameChar.moveGameChar();
+  game.moveCharacter();
 
   // Flagpole checking function
-  if (flagpole.isReached == false) {
-    flagpole.check();
+  if (game.flagpole.isReached == false) {
+    game.checkFlagpole();
   }
 
   // Check If the player die.
@@ -1090,8 +1140,8 @@ function draw() {
   // Draw player lives.
   game.drawPlayerLives();
 
-  // Update real position of gameChar for collision detection.
-  gameChar.world_x = gameChar.pos_x - scrollPos;
+  // Update real position of character for collision detection.
+  game.character.world_x = game.character.pos_x - game.scrollPos;
 }
 
 // ---------------------
@@ -1103,20 +1153,20 @@ function keyPressed() {
   // keys are pressed.
 
   if (key == "D" || keyCode == 39) {
-    gameChar.isRight = true;
+    game.character.isRight = true;
   }
   if (key == "A" || keyCode == 37) {
-    gameChar.isLeft = true;
+    game.character.isLeft = true;
   }
   if (key == "W" || keyCode == 38) {
-    gameChar.isPlummeting = true;
+    game.character.isPlummeting = true;
   }
   if (key == " " || keyCode == 32) {
-    if (game.lives < 1 || flagpole.isReached) {
+    if (game.lives < 1 || game.flagpole.isReached) {
       game.reset();
       game.start();
     } else {
-      gameChar.isPlummeting = true;
+      game.character.isPlummeting = true;
     }
   }
 }
@@ -1126,12 +1176,12 @@ function keyReleased() {
   // keys are released.
 
   if (key == "D" || keyCode == 39) {
-    gameChar.isRight = false;
+    game.character.isRight = false;
   }
   if (key == "A" || keyCode == 37) {
-    gameChar.isLeft = false;
+    game.character.isLeft = false;
   }
   if (key == "W" || keyCode == 32 || keyCode == 38) {
-    gameChar.isPlummeting = false;
+    game.character.isPlummeting = false;
   }
 }
