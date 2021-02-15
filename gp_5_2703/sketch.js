@@ -1,4 +1,19 @@
 let game;
+let sound;
+
+function preload() {
+  soundFormats("mp3", "wav");
+  //load your sounds here
+  sound = {
+    jump: loadSound("assets/jump.wav"),
+    collectItem: loadSound("assets/collectItem.wav"),
+    gameWin: loadSound("assets/gameWin.wav"),
+    // gameOver: loadSound("assets/gameOver.wav"),
+    fall: loadSound("assets/charFall.wav"),
+  };
+  sound.gameWin.setVolume(0.1);
+  sound.fall.setVolume(0.1);
+}
 
 function setup() {
   createCanvas(1024, 576);
@@ -6,6 +21,8 @@ function setup() {
     floorPos_y: (height * 3) / 4,
     lives: 3,
     score: 0,
+    //Control sound repaet after gameCompleted or GameOver
+    finished: false,
     //Game Character
     character: {
       pos_x: width / 2,
@@ -860,6 +877,9 @@ function setup() {
         this.character.world_x + 5 < t_canyon.pos_x + t_canyon.width &&
         this.character.pos_y >= this.floorPos_y
       ) {
+        if (!sound.fall.isPlaying() && game.lives > 0) {
+          sound.fall.play();
+        }
         this.character.isPlummeting = true;
         this.character.pos_y += 5;
       }
@@ -914,6 +934,7 @@ function setup() {
       ) {
         t_collectable.isFound = true;
         this.scoreCounter();
+        sound.collectItem.play();
       }
     },
 
@@ -1032,7 +1053,7 @@ function setup() {
     // Game over, completed and reset functions
     // ---------------------------
 
-    // Game over render
+    // Game over
     over: function () {
       push();
       fill(255);
@@ -1043,8 +1064,12 @@ function setup() {
       pop();
     },
 
-    // Game complete render
+    // Game complete
     completed: function () {
+      if (!sound.gameWin.isPlaying() && !this.finished) {
+        sound.gameWin.play();
+        this.finished = true;
+      }
       push();
       fill(255);
       stroke(1);
@@ -1058,6 +1083,7 @@ function setup() {
     reset: function () {
       this.lives = 3;
       this.score = 0;
+      this.finished = false;
       this.flagpole.isReached = false;
       //Re Draw collectable items.
       for (let i = 0; i < this.collectableItems.length; i++) {
@@ -1167,6 +1193,7 @@ function keyPressed() {
       game.start();
     } else {
       game.character.isPlummeting = true;
+      sound.jump.play();
     }
   }
 }
