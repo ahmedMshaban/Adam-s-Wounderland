@@ -1,5 +1,6 @@
 let game;
 let sound;
+let platforms;
 
 function preload() {
   soundFormats("mp3", "wav");
@@ -8,7 +9,7 @@ function preload() {
     jump: loadSound("assets/jump.wav"),
     collectItem: loadSound("assets/collectItem.wav"),
     gameWin: loadSound("assets/gameWin.wav"),
-    // gameOver: loadSound("assets/gameOver.wav"),
+    gameOver: loadSound("assets/gameOver.wav"),
     fall: loadSound("assets/charFall.wav"),
   };
   sound.gameWin.setVolume(0.1);
@@ -17,22 +18,24 @@ function preload() {
 
 function setup() {
   createCanvas(1024, 576);
+  platforms = [];
   game = {
     floorPos_y: (height * 3) / 4,
     lives: 3,
     score: 0,
     //Control sound repaet after gameCompleted or GameOver
-    finished: false,
+    isFinished: false,
     //Game Character
     character: {
       pos_x: width / 2,
-      pos_y: this.floorPos_y, // undefined initialize it in start method
+      pos_y: undefined, // undefined initialize it in start method
       world_x: 0,
       // Boolean variables to control the movement of the game character.
       isLeft: false,
       isRight: false,
       isFalling: false,
       isPlummeting: false,
+      isContact: false,
     },
     // Variable to control the background scrolling.
     scrollPos: 0,
@@ -600,14 +603,33 @@ function setup() {
       // Logic to make the game character rise and fall.
       if (
         this.character.isPlummeting &&
-        this.character.pos_y == this.floorPos_y
+        (this.character.pos_y == this.floorPos_y || game.character.isContact)
       ) {
+        sound.jump.play();
         this.character.pos_y -= 100;
+        //This to prevent the game.character from Plummeting twic the first time he is in platforms 
+        this.character.isPlummeting = false;
       }
 
       if (this.character.pos_y < this.floorPos_y) {
-        this.character.pos_y++;
-        this.character.isFalling = true;
+        for (let i = 0; i < platforms.length; i++) {
+          if (
+            platforms[i].checkContact(
+              game.character.world_x,
+              game.character.pos_y
+            )
+          ) {
+            game.character.isContact = true;
+            this.character.isFalling = false;
+            break;
+          } else {
+            game.character.isContact = false;
+          }
+        }
+        if (!game.character.isContact) {
+          this.character.pos_y++;
+          this.character.isFalling = true;
+        }
       } else {
         this.character.isFalling = false;
       }
@@ -1020,7 +1042,7 @@ function setup() {
     // Flagpole render and check functions
     // ----------------------------------
     // Function to draw the Flagpole on the screen.
-    renderFlagpole: function () {
+    drawFlagpole: function () {
       push();
       strokeWeight(5);
       stroke(180);
@@ -1055,6 +1077,10 @@ function setup() {
 
     // Game over
     over: function () {
+      if (!sound.gameOver.isPlaying() && !this.isFinished) {
+        sound.gameOver.play();
+        this.isFinished = true;
+      }
       push();
       fill(255);
       stroke(1);
@@ -1066,9 +1092,9 @@ function setup() {
 
     // Game complete
     completed: function () {
-      if (!sound.gameWin.isPlaying() && !this.finished) {
+      if (!sound.gameWin.isPlaying() && !this.isFinished) {
         sound.gameWin.play();
-        this.finished = true;
+        this.isFinished = true;
       }
       push();
       fill(255);
@@ -1083,7 +1109,7 @@ function setup() {
     reset: function () {
       this.lives = 3;
       this.score = 0;
-      this.finished = false;
+      this.isFinished = false;
       this.flagpole.isReached = false;
       //Re Draw collectable items.
       for (let i = 0; i < this.collectableItems.length; i++) {
@@ -1091,8 +1117,8 @@ function setup() {
       }
     },
   };
-
   game.start();
+  platforms.push(createPlatforms(width / 2, game.floorPos_y - 70, 100, 20));
 }
 
 function draw() {
@@ -1129,8 +1155,13 @@ function draw() {
     }
   }
 
+  //Draw Platform
+  for (let i = 0; i < platforms.length; i++) {
+    platforms[i].draw();
+  }
+
   // Draw Flagpole.
-  game.renderFlagpole();
+  game.drawFlagpole();
 
   pop();
 
@@ -1193,7 +1224,6 @@ function keyPressed() {
       game.start();
     } else {
       game.character.isPlummeting = true;
-      sound.jump.play();
     }
   }
 }
@@ -1211,4 +1241,30 @@ function keyReleased() {
   if (key == "W" || keyCode == 32 || keyCode == 38) {
     game.character.isPlummeting = false;
   }
+}
+
+// ---------------------------------
+// Platform function
+// ---------------------------------
+function createPlatforms(pos_x, pos_y, length) {
+  p = {
+    pos_x: width / 2,
+    pos_y: 340,
+    length: 100,
+    draw: function () {
+      noStroke();
+      fill(255, 0, 255);
+      rect(this.pos_x, this.pos_y, this.length, 20);
+    },
+    checkContact: function (gcPos_x, gcPos_y) {
+      if (gcPos_x > this.pos_x && gcPos_x < this.pos_x + this.length) {
+        let d = this.pos_y - gcPos_y;
+        if (d >= 0 && d < 5) {
+          return true;
+        }
+      }
+      return false;
+    },
+  };
+  return p;
 }
