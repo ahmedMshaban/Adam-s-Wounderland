@@ -10,6 +10,7 @@ let mountains;
 let trees;
 let collectableItems;
 let platforms;
+let enemies;
 let flagpole;
 
 function preload() {
@@ -39,6 +40,7 @@ function startGame() {
   trees = [];
   collectableItems = [];
   platforms = [];
+  enemies = [];
   flagpole = {
     x_pos: 2500,
     isReached: false,
@@ -586,11 +588,15 @@ function startGame() {
         this.isFinished = true;
       }
       push();
-      fill(255);
+      fill(229, 126, 104);
       stroke(1);
       textSize(35);
+      textStyle(BOLD);
       textAlign(CENTER);
-      text("Game over. Press space to continue.", width / 2, height / 2);
+      text("GAME OVER!", width / 2, height / 2);
+      textSize(20);
+      textStyle(NORMAL);
+      text("Press space to continue.", width / 2, height / 2 + 30);
       pop();
     },
 
@@ -601,11 +607,15 @@ function startGame() {
         this.isFinished = true;
       }
       push();
-      fill(255);
+      fill(229, 126, 104);
       stroke(1);
       textSize(35);
+      textStyle(BOLD);
       textAlign(CENTER);
-      text("Level complete. Press space to continue.", width / 2, height / 2);
+      text("LEVEL COMPLETE!", width / 2, height / 2);
+      textSize(20);
+      textStyle(NORMAL);
+      text("Press space to continue.", width / 2, height / 2 + 30);
       pop();
     },
 
@@ -674,6 +684,10 @@ function startGame() {
   collectableItems.push(createCollectableItems(500, 340, 10, false));
   collectableItems.push(createCollectableItems(1500, 405, 10, false));
   collectableItems.push(createCollectableItems(2100, 360, 10, false));
+
+  //Enemies
+  enemies.push(new Enemy(810, floorPos_y - 10, 100));
+  enemies.push(new Enemy(840, floorPos_y - 10, 100));
 }
 
 function draw() {
@@ -731,6 +745,22 @@ function draw() {
 
   // Draw Flagpole.
   flagpole.draw();
+
+  // Draw Enemies
+  for(let i = 0; i < enemies.length; i++) {
+    enemies[i].draw();
+    let isContact = enemies[i].checkContact(character.world_x, character.pos_y);
+    if(isContact) {
+      if (!sound.fall.isPlaying() && player.lives > 1) {
+        sound.fall.play();
+      }
+      if (player.lives > 0) {
+        player.lives--;
+        game.start();
+        break;
+      }
+    }
+  }
 
   pop();
 
@@ -1121,4 +1151,41 @@ function createCollectableItems(pos_x, pos_y, size, isFound) {
     },
   };
   return c;
+}
+
+
+// ---------------------------------
+// Enemy
+// ---------------------------------
+function Enemy(pos_x, pos_y, range) {
+  this.pos_x = pos_x;
+  this.pos_y = pos_y;
+  this.range = range;
+
+  this.currentX = pos_x;
+  this.inc = 1;
+
+  this.update = function() {
+    this.currentX += this.inc; 
+    if(this.currentX >= this.pos_x + this.range) {
+      this.inc -= 1;
+    }
+    else if (this.currentX < this.pos_x) {
+      this.inc = 1;
+    }
+  }
+
+  this.draw = function() {
+    this.update();
+    fill(229, 126, 104);
+    ellipse(this.currentX, this.pos_y, 20, 20);
+  }
+
+  this.checkContact = function(gcPos_x, gcPos_y) {
+    let d = dist(gcPos_x, gcPos_y, this.currentX, this.pos_y);
+    if(d < 20) {
+      return true;
+    }
+    return false;
+  }
 }
