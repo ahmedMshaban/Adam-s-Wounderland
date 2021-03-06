@@ -14,14 +14,24 @@ let enemies;
 let flagpole;
 
 function preload() {
-  soundFormats("mp3", "wav");
-  //load your sounds here
+  soundFormats('mp3', 'wav');
+  // ---------------------
+  // Sounds
+  // ---------------------
+  /*
+  I think the sound functionally was straight forward but I found some difficulties
+  on the loop of the sounds when the game over or falls on the canyons, it was 
+  very helpful to read the p5 reference about sounds and I found there a lot of 
+  a useful method that helped solved my problems easily. I learned from that 
+  I need to read the library documentation first before I implement the functionally 
+  because most likely I will find the function I already need there. 
+  */
   sound = {
-    jump: loadSound("assets/jump.wav"),
-    collectItem: loadSound("assets/collectItem.wav"),
-    gameWin: loadSound("assets/gameWin.wav"),
-    gameOver: loadSound("assets/gameOver.wav"),
-    fall: loadSound("assets/charFall.wav"),
+    jump: loadSound('assets/jump.wav'),
+    collectItem: loadSound('assets/collectItem.wav'),
+    gameWin: loadSound('assets/gameWin.wav'),
+    gameOver: loadSound('assets/gameOver.wav'),
+    fall: loadSound('assets/charFall.wav'),
   };
 }
 
@@ -84,7 +94,7 @@ function startGame() {
       fill(255);
       noStroke();
       textSize(17);
-      text("Score: " + this.score, 20, 30);
+      text('Score: ' + this.score, 20, 30);
     },
 
     // Increment game score by one each time the character collects an item.
@@ -96,7 +106,7 @@ function startGame() {
     // lives render and check functions
     // ----------------------------------
 
-    /* Tests if your character has fallen below the bottom of the canvas.
+    /* Tests if the character has fallen below the bottom of the canvas.
     When this is `true`, decrement the `lives` counter by one */
     checkDie: function () {
       if (character.pos_y > height) {
@@ -593,10 +603,10 @@ function startGame() {
       textSize(35);
       textStyle(BOLD);
       textAlign(CENTER);
-      text("GAME OVER!", width / 2, height / 2);
+      text('GAME OVER!', width / 2, height / 2);
       textSize(20);
       textStyle(NORMAL);
-      text("Press space to continue.", width / 2, height / 2 + 30);
+      text('Press space to continue.', width / 2, height / 2 + 30);
       pop();
     },
 
@@ -612,10 +622,10 @@ function startGame() {
       textSize(35);
       textStyle(BOLD);
       textAlign(CENTER);
-      text("LEVEL COMPLETE!", width / 2, height / 2);
+      text('LEVEL COMPLETE!', width / 2, height / 2);
       textSize(20);
       textStyle(NORMAL);
-      text("Press space to continue.", width / 2, height / 2 + 30);
+      text('Press space to continue.', width / 2, height / 2 + 30);
       pop();
     },
 
@@ -687,7 +697,9 @@ function startGame() {
 
   //Enemies
   enemies.push(new Enemy(810, floorPos_y - 10, 100));
-  enemies.push(new Enemy(840, floorPos_y - 10, 100));
+  enemies.push(new Enemy(850, floorPos_y - 10, 120));
+  enemies.push(new Enemy(2200, floorPos_y - 10, 100));
+  enemies.push(new Enemy(2240, floorPos_y - 10, 120));
 }
 
 function draw() {
@@ -747,10 +759,10 @@ function draw() {
   flagpole.draw();
 
   // Draw Enemies
-  for(let i = 0; i < enemies.length; i++) {
+  for (let i = 0; i < enemies.length; i++) {
     enemies[i].draw();
     let isContact = enemies[i].checkContact(character.world_x, character.pos_y);
-    if(isContact) {
+    if (isContact) {
       if (!sound.fall.isPlaying() && player.lives > 1) {
         sound.fall.play();
       }
@@ -807,16 +819,16 @@ function keyPressed() {
   // if statements to control the animation of the character when
   // keys are pressed.
 
-  if (key == "D" || keyCode == 39) {
+  if (key == 'D' || keyCode == 39) {
     character.isRight = true;
   }
-  if (key == "A" || keyCode == 37) {
+  if (key == 'A' || keyCode == 37) {
     character.isLeft = true;
   }
-  if (key == "W" || keyCode == 38) {
+  if (key == 'W' || keyCode == 38) {
     character.isPlummeting = true;
   }
-  if (key == " " || keyCode == 32) {
+  if (key == ' ' || keyCode == 32) {
     if (player.lives < 1 || flagpole.isReached) {
       game.reset();
       game.start();
@@ -830,13 +842,13 @@ function keyReleased() {
   // if statements to control the animation of the character when
   // keys are released.
 
-  if (key == "D" || keyCode == 39) {
+  if (key == 'D' || keyCode == 39) {
     character.isRight = false;
   }
-  if (key == "A" || keyCode == 37) {
+  if (key == 'A' || keyCode == 37) {
     character.isLeft = false;
   }
-  if (key == "W" || keyCode == 32 || keyCode == 38) {
+  if (key == 'W' || keyCode == 32 || keyCode == 38) {
     character.isPlummeting = false;
   }
 }
@@ -871,7 +883,7 @@ function createPlatforms(pos_x, pos_y, length) {
 }
 
 // ---------------------------------
-// Create Canyons
+// Create Canyon
 // ---------------------------------
 function createCanyons(pos_x, width) {
   c = {
@@ -906,7 +918,7 @@ function createCanyons(pos_x, width) {
 }
 
 // ---------------------------------
-// Create Clouds
+// Create Cloud
 // ---------------------------------
 function createClouds(pos_x, pos_y, scale) {
   c = {
@@ -986,7 +998,7 @@ function createClouds(pos_x, pos_y, scale) {
 }
 
 // ---------------------------------
-// Create Mountains
+// Create Mountain
 // ---------------------------------
 function createMountains(pos_x, pos_y, wide) {
   m = {
@@ -1038,7 +1050,7 @@ function createMountains(pos_x, pos_y, wide) {
 }
 
 // ---------------------------------
-// Create Trees
+// Create Tree
 // ---------------------------------
 function createtrees(pos_x, pos_y, scale, shadow_x, shadow_y) {
   t = {
@@ -1109,7 +1121,7 @@ function createtrees(pos_x, pos_y, scale, shadow_x, shadow_y) {
 }
 
 // ---------------------------------
-// Create Collectable Items
+// Create Collectable Item
 // ---------------------------------
 function createCollectableItems(pos_x, pos_y, size, isFound) {
   c = {
@@ -1153,10 +1165,16 @@ function createCollectableItems(pos_x, pos_y, size, isFound) {
   return c;
 }
 
-
 // ---------------------------------
 // Enemy
 // ---------------------------------
+/*
+In the begging, I found it difficult to grasp the idea of the Constructor functions
+but after I read more about the design patterns and how this helps me write
+scalable and clean code I love it and I learned a lot about it and I believe 
+it makes my code more readable and can extend it more in the future and more 
+write new functions easily.
+*/
 function Enemy(pos_x, pos_y, range) {
   this.pos_x = pos_x;
   this.pos_y = pos_y;
@@ -1165,27 +1183,47 @@ function Enemy(pos_x, pos_y, range) {
   this.currentX = pos_x;
   this.inc = 1;
 
-  this.update = function() {
-    this.currentX += this.inc; 
-    if(this.currentX >= this.pos_x + this.range) {
+  this.update = function () {
+    this.currentX += this.inc;
+    if (this.currentX >= this.pos_x + this.range) {
       this.inc -= 1;
-    }
-    else if (this.currentX < this.pos_x) {
+    } else if (this.currentX < this.pos_x) {
       this.inc = 1;
     }
-  }
+  };
 
-  this.draw = function() {
+  this.draw = function () {
     this.update();
-    fill(229, 126, 104);
-    ellipse(this.currentX, this.pos_y, 20, 20);
-  }
+    //body
+    noStroke();
+    fill(109, 106, 128);
+    ellipse(this.currentX, this.pos_y - 12, 30, 30);
+    //right eyes
+    fill(239, 172, 159);
+    ellipse(this.currentX - 5, this.pos_y - 18, 3, 5);
+    //right pupil
+    fill(255);
+    ellipse(this.currentX - 5, this.pos_y - 18.5, 1.25, 2);
+    //left eyes
+    fill(239, 172, 159);
+    ellipse(this.currentX + 5, this.pos_y - 18, 3, 5);
+    //left pupil
+    fill(255);
+    ellipse(this.currentX + 5, this.pos_y - 18.5, 1.25, 2);
+    //mouse
+    stroke(254, 225, 90);
+    //x1, y1, x2, y2
+    line(this.currentX - 2, this.pos_y - 10, this.currentX - 3, this.pos_y - 8);
+    line(this.currentX - 2, this.pos_y - 10, this.currentX, this.pos_y - 8);
+    line(this.currentX + 1, this.pos_y - 10, this.currentX, this.pos_y - 8);
+    line(this.currentX + 1, this.pos_y - 10, this.currentX + 3, this.pos_y - 8);
+  };
 
-  this.checkContact = function(gcPos_x, gcPos_y) {
+  this.checkContact = function (gcPos_x, gcPos_y) {
     let d = dist(gcPos_x, gcPos_y, this.currentX, this.pos_y);
-    if(d < 20) {
+    if (d < 20) {
       return true;
     }
     return false;
-  }
+  };
 }
