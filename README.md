@@ -1,6 +1,6 @@
-# Introduction to Programming I Final Project
+# Adam's Wounderland
 
-[Project Link](https://ahmedmshaban.github.io/Introduction-to-Programming-I-Final-Project/)
+[Project Link](https://ahmedmshaban.github.io/Adam-s-Wounderland/)
 
 ## Table of Contents
 
